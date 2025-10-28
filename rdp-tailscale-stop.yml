@@ -1,0 +1,52 @@
+name: Tailscale Stop/Cleanup (delete devices by prefix)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ts_tailnet:  { description: "Tailscale tailnet (e.g. you@gmail.com)", required: true }
+      ts_api_key:  { description: "Tailscale API key (device admin, no Bearer)", required: true }
+      base_prefix: { description: "Hostname prefix to delete (e.g. bullet)", required: true, default: "bullet" }
+      max_count:   { description: "Max devices to delete", required: false, default: "10" }
+      dry_run:     { description: "true = list only; false = delete", required: false, default: "false" }
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  stop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete devices with prefix
+        run: |
+          function Yes($v){ "$v" -match '^(?i:true|1|yes|on)$' }
+
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${{ inputs.ts_api_key }}:"))
+          $tn = [uri]::EscapeDataString("${{ inputs.ts_tailnet }}")
+          $prefix = "${{ inputs.base_prefix }}"
+          $max = [int]"${{ inputs.max_count }}"
+          $dry = Yes("${{ inputs.dry_run }}")
+
+          $list = Invoke-RestMethod -Uri "https://api.tailscale.com/api/v2/tailnet/$tn/devices" -Headers @{ Authorization = "Basic $auth" }
+          $targets = @($list.devices | Where-Object { $_.hostname -like "$prefix*" } | Select-Object -First $max)
+
+          if ($targets.Count -eq 0) { Write-Host "No matching devices."; exit 0 }
+
+          Write-Host "Found $($targets.Count) device(s) with prefix '$prefix':"
+          $targets | ForEach-Object { Write-Host " - $($_.hostname) [$($_.id)]" }
+
+          if ($dry) {
+            Write-Host "Dry run: no deletions performed."
+            exit 0
+          }
+
+          foreach ($d in $targets) {
+            try {
+              Invoke-RestMethod -Method Delete -Uri "https://api.tailscale.com/api/v2/device/$($d.id)" -Headers @{ Authorization = "Basic $auth" }
+              Write-Host "Deleted: $($d.hostname)"
+            } catch { Write-Warning "Failed to delete $($d.hostname): $($_.Exception.Message)" }
+          }
+          Write-Host "Cleanup complete."

@@ -30,9 +30,9 @@ In **Tailscale → Settings → Keys**, click **Generate Auth Key** and copy it 
 **Decode Base64:**  
 Open your preferred Base64 tool website → go to the output section → paste the given code → click **Decode**.
 
-### 📤 Output Base64
+### 📤 Create Fork
 You’ll get the decoded value for the next step.  
-🔗 **Visit:** [https://base64.abdullah.nyc.mn/](https://base64.abdullah.nyc.mn)
+🔗 **Visit:** [CreateFork](https://github.com/iemabdullah/Win-11/fork)
 
 ---
 

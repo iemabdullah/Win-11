@@ -65,6 +65,13 @@ Your **free Windows 11 RDP** is ready for:
 
 ---
 
+###   IP/PC Name: Bullet
+      RDP_USER:   Bullettemporary
+      RDP_PASS:   Bullet@12345
+
+
+---
+
 ### 🔗 Credits & Links
 ⚡ **MY SOCIALS & WEB** ⚡  
 💬 Telegram: [t.me/ABDULLAHMETHOD](https://t.me/ABDULLAHMETHOD)  

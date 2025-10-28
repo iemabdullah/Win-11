@@ -65,7 +65,8 @@ Your **free Windows 11 RDP** is ready for:
 
 ---
 
-###   IP/PC Name: Bullet
+###   IP/PC Name
+      IP/PC Name: Bullet
       RDP_USER:   Bullettemporary
       RDP_PASS:   Bullet@12345
 
